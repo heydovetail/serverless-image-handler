@@ -1,26 +1,22 @@
 #!/bin/bash
 
-# This assumes all of the OS-level configuration has been completed and git repo has already been cloned
-#sudo yum-config-manager --enable epel
-#sudo yum update -y
-#sudo yum install git libpng-devel libcurl-devel gcc python-devel libjpeg-devel -y
-# pip install --upgrade pip==9.0.3
-# alias sudo='sudo env PATH=$PATH'
-# pip install --upgrade setuptools==39.0.1
-# pip install --upgrade virtualenv==15.2.0
-# This script should be run from the repo's deployment directory
-# cd deployment
-# ./build-s3-dist.sh source-bucket-base-name
-# source-bucket-base-name should be the base name for the S3 bucket location where the template will source the Lambda code from.
-# The template will append '-[region_name]' to this bucket name.
-# For example: ./build-s3-dist.sh solutions
-# The template will then expect the source code to be located in the solutions-[region_name] bucket
-
 # Check to see if input has been provided:
 if [ -z "$1" ]; then
-    echo "Please provide the base source bucket name where the lambda code will eventually reside.\nFor example: ./build-s3-dist.sh solutions"
+    echo "Please provide the base source bucket name where the lambda code will eventually reside.\nFor example: ./build-s3-dist.sh solutions v3.1.0"
     exit 1
 fi
+
+if [ -z "$2" ]; then
+    echo "Please provide the version of the lambda code.\nFor example: ./build-s3-dist.sh solutions v3.1.0"
+    exit 1
+fi
+
+yum install yum-utils epel-release -y
+yum-config-manager --enable epel
+yum update -y
+yum install zip wget git libpng-devel libcurl-devel gcc python-devel libjpeg-devel -y
+pip install setuptools==39.0.1
+pip install virtualenv==15.2.0
 
 # Build source
 echo "Starting to build distribution"
@@ -91,7 +87,7 @@ pwd
 # SO-SIH-159 - 07/25/2018 - Pycurl ssl backend
 # Configuring compile time ssl backend
 # https://stackoverflow.com/questions/21096436/ssl-backend-error-when-using-openssl
-export PYCURL_SSL_LIBRARY=nss
+export PYCURL_SSL_LIBRARY=openssl
 
 # to help with debugging
 echo "which curl && curl --version"

@@ -1,0 +1,7 @@
+bin
+deployment/dist
+include
+libjpeg.*
+libturbojpeg.*
+pkgconfig
+share
